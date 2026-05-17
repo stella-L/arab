@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ArabType — 아랍어 타이핑 연습</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== HOME SCREEN ===== -->
+  <div id="screen-home" class="screen active">
+    <div class="home-header">
+      <div class="app-logo">
+        <div class="logo-icon">ع</div>
+        <div>
+          <div class="app-name">ArabType</div>
+          <div class="app-sub">아랍어 타이핑 연습</div>
+        </div>
+      </div>
+      <p class="app-tagline">아랍어 타이핑 실력을 키워보세요</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value" id="stat-today">0</div>
+        <div class="stat-label">오늘 학습</div>
+      </div>
+      <div class="stat-card accent">
+        <div class="stat-bar-wrap"><div class="stat-bar" id="stat-bar"></div></div>
+        <div class="stat-label">정답률</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value streak" id="stat-streak">0</div>
+        <div class="stat-label">연속 정답</div>
+      </div>
+    </div>
+
+    <h2 class="section-title">학습 모드 선택</h2>
+
+    <div class="mode-card active-mode" id="btn-start">
+      <div class="mode-badge">추천</div>
+      <div class="mode-title">단어 타이핑</div>
+      <div class="mode-desc">아랍어 단어를 직접 타이핑하며<br>근육 기억을 만들어요</div>
+      <button class="start-btn">시작하기 →</button>
+    </div>
+
+    <div class="mode-card locked">
+      <div class="mode-lock">⊙ Phase 2 준비 중</div>
+      <div class="mode-title dim">오답 복습</div>
+      <div class="mode-desc dim">틀린 단어만 집중 연습</div>
+    </div>
+
+    <div class="mode-card locked">
+      <div class="mode-lock">⊙ Phase 3 준비 중</div>
+      <div class="mode-title dim">내 단어장</div>
+      <div class="mode-desc dim">직접 단어를 추가해서 연습</div>
+    </div>
+
+    <nav class="bottom-nav">
+      <div class="nav-item active">🏠<span>홈</span></div>
+      <div class="nav-item">📋<span>기록</span></div>
+      <div class="nav-item">⚙️<span>설정</span></div>
+    </nav>
+  </div>
+
+  <!-- ===== PRACTICE SCREEN ===== -->
+  <div id="screen-practice" class="screen">
+    <div class="practice-header">
+      <button class="back-btn" id="btn-back">‹</button>
+      <div class="practice-title">
+        <div>단어 타이핑</div>
+        <div class="word-progress" id="word-progress">1 / 20 단어</div>
+      </div>
+      <div class="streak-badge" id="streak-badge">⚡ 0연속</div>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <div class="progress-info">
+      <span id="pct-label">0% 완료</span>
+      <span id="score-label">정답 0 / 오답 0</span>
+    </div>
+
+    <div class="word-card" id="word-card">
+      <div class="card-top">
+        <div class="category-tag" id="card-category">기초 단어</div>
+        <div class="card-num" id="card-num">01</div>
+      </div>
+      <div class="arabic-word" id="arabic-word" dir="rtl">مَرْحَبًا</div>
+      <div class="transliteration" id="transliteration">mar·ha·ban</div>
+      <div class="meaning-row">
+        <span class="meaning-icon">뜻</span>
+        <span class="meaning-ko" id="meaning-ko">안녕하세요</span>
+      </div>
+      <div class="hint-row" id="hint-row">
+        <span class="hint-icon">📍</span>
+        <span class="hint-text" id="hint-text">힌트: 7글자, م으로 시작해요</span>
+      </div>
+    </div>
+
+    <div class="input-label">● 아랍어로 입력하세요 (오른쪽에서 왼쪽)</div>
+    <div class="input-wrap">
+      <input
+        type="text"
+        id="arabic-input"
+        class="arabic-input"
+        dir="rtl"
+        lang="ar"
+        placeholder="مرحبا"
+        autocomplete="off"
+        autocorrect="off"
+        spellcheck="false"
+      />
+    </div>
+    <div class="keyboard-hint">⌨ 기기의 아랍어 키보드를 활성화하세요</div>
+
+    <!-- 정답 피드백 -->
+    <div class="feedback correct-feedback" id="feedback-correct">
+      <div class="feedback-left">✓ 정답이에요! 🎉</div>
+      <div class="feedback-right">
+        <div class="feedback-word" id="feedback-word"></div>
+        <div class="feedback-score">⚡ +10</div>
+      </div>
+    </div>
+
+    <div class="action-row">
+      <button class="skip-btn" id="btn-skip">↩ 건너뛰기</button>
+      <button class="next-btn" id="btn-next" disabled>다음 단어 →</button>
+    </div>
+  </div>
+
+  <!-- ===== WRONG FEEDBACK SCREEN ===== -->
+  <div id="screen-wrong" class="screen">
+    <div class="practice-header">
+      <button class="back-btn" id="btn-back-wrong">‹</button>
+      <div class="practice-title">
+        <div>단어 타이핑</div>
+      </div>
+      <div class="streak-badge dim" id="streak-badge-wrong">⚡ 0연속</div>
+    </div>
+
+    <div class="word-card wrong-card">
+      <div class="card-top">
+        <div class="category-tag" id="wrong-category">기초 단어</div>
+        <div class="wrong-x">✕</div>
+      </div>
+      <div class="arabic-word" id="wrong-arabic" dir="rtl">شُكْرًا</div>
+      <div class="transliteration" id="wrong-trans">shuk·ran</div>
+      <div class="meaning-row">
+        <span class="meaning-icon">뜻</span>
+        <span class="meaning-ko" id="wrong-meaning">감사합니다</span>
+      </div>
+    </div>
+
+    <div class="compare-box">
+      <div class="compare-label">입력 비교</div>
+      <div class="compare-row">
+        <span class="compare-tag my">내 답</span>
+        <span class="compare-word" dir="rtl" id="my-answer"></span>
+        <span class="compare-icon wrong-icon">✕</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-tag correct">정답</span>
+        <span class="compare-word" dir="rtl" id="correct-answer"></span>
+        <span class="compare-icon correct-icon">✓</span>
+      </div>
+      <div class="compare-note" id="compare-note"></div>
+    </div>
+
+    <div class="action-row">
+      <button class="retry-btn" id="btn-retry">↺ 다시 시도</button>
+      <button class="next-btn" id="btn-next-wrong">다음 단어 →</button>
+    </div>
+    <div class="note-link">📌 오답 노트에 저장 (Phase 2)</div>
+  </div>
+
+  <!-- ===== COMPLETE SCREEN ===== -->
+  <div id="screen-complete" class="screen">
+    <div class="complete-wrap">
+      <div class="complete-emoji">🎉</div>
+      <h2>학습 완료!</h2>
+      <div class="complete-stats">
+        <div class="c-stat"><div class="c-val" id="c-total"></div><div class="c-lbl">총 단어</div></div>
+        <div class="c-stat"><div class="c-val" id="c-correct"></div><div class="c-lbl">정답</div></div>
+        <div class="c-stat"><div class="c-val" id="c-rate"></div><div class="c-lbl">정답률</div></div>
+      </div>
+      <button class="start-btn" id="btn-home">홈으로 돌아가기</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

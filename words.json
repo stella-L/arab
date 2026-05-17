@@ -1,0 +1,22 @@
+[
+  { "id": "b001", "arabic": "مَرْحَبًا", "transliteration": "mar·ha·ban", "meaning_ko": "안녕하세요 / 환영합니다", "category": "기초 단어", "hint_len": 7, "hint_start": "م" },
+  { "id": "b002", "arabic": "شُكْرًا", "transliteration": "shuk·ran", "meaning_ko": "감사합니다", "category": "기초 단어", "hint_len": 6, "hint_start": "ش" },
+  { "id": "b003", "arabic": "نَعَم", "transliteration": "na·am", "meaning_ko": "네 / 맞아요", "category": "기초 단어", "hint_len": 4, "hint_start": "ن" },
+  { "id": "b004", "arabic": "لَا", "transliteration": "laa", "meaning_ko": "아니요", "category": "기초 단어", "hint_len": 2, "hint_start": "ل" },
+  { "id": "b005", "arabic": "مَاء", "transliteration": "maa'", "meaning_ko": "물", "category": "기초 단어", "hint_len": 3, "hint_start": "م" },
+  { "id": "b006", "arabic": "بَيْت", "transliteration": "bayt", "meaning_ko": "집", "category": "기초 단어", "hint_len": 4, "hint_start": "ب" },
+  { "id": "b007", "arabic": "كِتَاب", "transliteration": "ki·taab", "meaning_ko": "책", "category": "기초 단어", "hint_len": 5, "hint_start": "ك" },
+  { "id": "b008", "arabic": "يَوْم", "transliteration": "yawm", "meaning_ko": "날 / 하루", "category": "기초 단어", "hint_len": 4, "hint_start": "ي" },
+  { "id": "b009", "arabic": "صَبَاح", "transliteration": "sa·baah", "meaning_ko": "아침", "category": "기초 단어", "hint_len": 5, "hint_start": "ص" },
+  { "id": "b010", "arabic": "لَيْل", "transliteration": "layl", "meaning_ko": "밤", "category": "기초 단어", "hint_len": 4, "hint_start": "ل" },
+  { "id": "b011", "arabic": "طَعَام", "transliteration": "ta·aam", "meaning_ko": "음식", "category": "기초 단어", "hint_len": 5, "hint_start": "ط" },
+  { "id": "b012", "arabic": "أُسْرَة", "transliteration": "us·ra", "meaning_ko": "가족", "category": "기초 단어", "hint_len": 5, "hint_start": "أ" },
+  { "id": "b013", "arabic": "صَدِيق", "transliteration": "sa·deeq", "meaning_ko": "친구", "category": "기초 단어", "hint_len": 5, "hint_start": "ص" },
+  { "id": "b014", "arabic": "وَاحِد", "transliteration": "waa·hid", "meaning_ko": "하나 (1)", "category": "숫자", "hint_len": 5, "hint_start": "و" },
+  { "id": "b015", "arabic": "اِثْنَان", "transliteration": "ith·naan", "meaning_ko": "둘 (2)", "category": "숫자", "hint_len": 6, "hint_start": "ا" },
+  { "id": "b016", "arabic": "ثَلَاثَة", "transliteration": "tha·laa·tha", "meaning_ko": "셋 (3)", "category": "숫자", "hint_len": 7, "hint_start": "ث" },
+  { "id": "b017", "arabic": "أَحْمَر", "transliteration": "ah·mar", "meaning_ko": "빨간색", "category": "색상", "hint_len": 5, "hint_start": "أ" },
+  { "id": "b018", "arabic": "أَزْرَق", "transliteration": "az·raq", "meaning_ko": "파란색", "category": "색상", "hint_len": 5, "hint_start": "أ" },
+  { "id": "b019", "arabic": "أَخْضَر", "transliteration": "akh·dar", "meaning_ko": "초록색", "category": "색상", "hint_len": 5, "hint_start": "أ" },
+  { "id": "b020", "arabic": "أَبْيَض", "transliteration": "ab·yad", "meaning_ko": "흰색", "category": "색상", "hint_len": 5, "hint_start": "أ" }
+]
