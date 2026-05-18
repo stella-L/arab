@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>아랍어 자판 배우기 — ArabType</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#111318;--surface:#1a1d27;--surface2:#22263a;--surface3:#2c3050;
+      --primary:#1A6B6B;--primary-light:#22908a;--primary-dim:rgba(26,107,107,.25);
+      --orange:#e07b2a;--orange-dim:rgba(224,123,42,.25);
+      --purple:#7c5cbf;--purple-dim:rgba(124,92,191,.25);
+      --green:#2a8a5a;--green-dim:rgba(42,138,90,.25);
+      --blue:#2a5abf;--blue-dim:rgba(42,90,191,.2);
+      --text:#f0f0f5;--text-dim:#8888aa;--text-mid:#bbbbcc;
+      --radius:16px;--key-radius:8px;
+    }
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;
+      display:flex;justify-content:center;min-height:100vh}
+    .screen{display:none;flex-direction:column;width:100%;max-width:430px;min-height:100vh}
+    .screen.active{display:flex}
+
+    /* ── HEADER ── */
+    .guide-header{
+      display:flex;align-items:center;gap:12px;
+      padding:52px 20px 14px;
+    }
+    .back-btn{
+      background:var(--surface);border:none;color:var(--text);
+      font-size:20px;width:36px;height:36px;border-radius:10px;
+      cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    }
+    .header-center{flex:1}
+    .header-title{font-size:16px;font-weight:700}
+    .step-bars{display:flex;gap:4px;margin-top:5px}
+    .step-bar{height:3px;flex:1;border-radius:2px;background:var(--surface2)}
+    .step-bar.done{background:var(--primary-light)}
+    .step-bar.active{background:var(--primary-light)}
+    .step-label{font-size:12px;color:var(--text-dim);white-space:nowrap;font-weight:700}
+
+    /* ── INFO BANNER ── */
+    .info-banner{
+      margin:0 16px 12px;
+      background:var(--primary-dim);border:1px solid var(--primary);
+      border-radius:10px;padding:8px 14px;
+      font-size:12px;color:var(--primary-light);
+      display:flex;align-items:center;gap:6px;
+    }
+
+    /* ── LEGEND ── */
+    .legend{display:flex;flex-wrap:wrap;gap:10px 16px;padding:0 16px 12px}
+    .legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-dim)}
+    .dot{width:8px;height:8px;border-radius:50%}
+    .dot.blue{background:#4a7aef}
+    .dot.orange{background:var(--orange)}
+    .dot.purple{background:var(--purple)}
+    .dot.green{background:#3abf7a}
+
+    /* ── KEYBOARD ── */
+    .keyboard-wrap{padding:0 10px 8px}
+    .kb-row{display:flex;justify-content:center;gap:4px;margin-bottom:4px}
+    .key{
+      flex:1;max-width:32px;min-width:26px;
+      background:var(--surface2);
+      border-radius:var(--key-radius);
+      padding:6px 2px;
+      text-align:center;
+      cursor:pointer;
+      transition:transform .12s,box-shadow .12s;
+      box-shadow:0 2px 0 rgba(0,0,0,.4);
+      border:1px solid rgba(255,255,255,.06);
+      user-select:none;
+    }
+    .key:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,.4)}
+    .key .ka{font-family:'Amiri',serif;font-size:17px;line-height:1.2;display:block}
+    .key .kh{font-size:7px;color:var(--text-dim);line-height:1.1;display:block;margin-top:1px}
+    .key.cat-basic{background:var(--blue-dim);border-color:rgba(74,122,239,.3)}
+    .key.cat-long{background:var(--green-dim);border-color:rgba(58,191,122,.3)}
+    .key.cat-special{background:var(--surface3)}
+    .key.selected{
+      background:var(--primary);border-color:var(--primary-light);
+      box-shadow:0 2px 8px rgba(26,107,107,.5);
+      transform:scale(1.12);
+      z-index:2;position:relative;
+    }
+    .key.selected .kh{color:rgba(255,255,255,.7)}
+
+    /* ── HARAKAT ROW ── */
+    .harakat-section{padding:6px 10px 10px}
+    .harakat-label{
+      font-size:11px;color:var(--text-dim);
+      display:flex;align-items:center;gap:8px;margin-bottom:6px;
+    }
+    .harakat-label::before,.harakat-label::after{content:'●'}
+    .harakat-label::before{color:var(--orange)}
+    .harakat-label::after{color:var(--purple)}
+    .harakat-row{display:flex;gap:6px;justify-content:center}
+    .h-key{
+      flex:1;max-width:60px;
+      padding:7px 4px;border-radius:8px;
+      text-align:center;cursor:pointer;
+      border:none;
+      box-shadow:0 2px 0 rgba(0,0,0,.4);
+      transition:transform .12s;
+      user-select:none;
+    }
+    .h-key:active{transform:translateY(1px)}
+    .h-key.orange{background:var(--orange);color:#fff}
+    .h-key.purple{background:var(--purple);color:#fff}
+    .h-key .hk-char{font-family:'Amiri',serif;font-size:18px;display:block;line-height:1.2}
+    .h-key .hk-name{font-size:8px;display:block;opacity:.85;margin-top:1px}
+
+    /* ── HINT CARD ── */
+    .hint-card{
+      margin:0 12px 12px;
+      background:var(--surface);
+      border-radius:var(--radius);
+      overflow:hidden;
+      flex-shrink:0;
+    }
+    .hint-card-header{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:10px 14px;border-bottom:1px solid var(--surface2);
+    }
+    .hint-selected-label{font-size:11px;color:var(--text-dim);display:flex;align-items:center;gap:5px}
+    .hint-selected-label::before{content:'●';color:var(--primary-light)}
+    .hint-try-btn{
+      background:var(--primary-dim);border:1px solid var(--primary);
+      color:var(--primary-light);font-family:'Noto Sans KR',sans-serif;
+      font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;cursor:pointer;
+    }
+    .hint-body{display:flex;gap:12px;padding:12px 14px}
+    .hint-char{
+      width:52px;height:52px;background:var(--primary-dim);
+      border-radius:12px;display:flex;align-items:center;justify-content:center;
+      font-family:'Amiri',serif;font-size:36px;flex-shrink:0;
+      border:1px solid var(--primary);
+    }
+    .hint-info{flex:1}
+    .hint-ko-name{font-size:18px;font-weight:700;line-height:1.1}
+    .hint-ar-name{font-family:'Amiri',serif;font-size:14px;color:var(--text-dim);direction:rtl}
+    .hint-pron{
+      display:inline-flex;align-items:center;gap:5px;
+      background:var(--surface2);border-radius:20px;
+      padding:3px 10px;margin-top:6px;font-size:11px;color:var(--text-mid);
+    }
+    .hint-cat-badge{
+      display:inline-block;margin-top:6px;
+      padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;
+    }
+    .badge-long{background:var(--green-dim);color:#3abf7a;border:1px solid rgba(58,191,122,.4)}
+    .badge-basic{background:var(--blue-dim);color:#6a9aff;border:1px solid rgba(74,122,239,.3)}
+    .badge-special{background:var(--surface2);color:var(--text-dim)}
+    .hint-examples{padding:0 14px 12px}
+    .hint-examples-label{font-size:10px;color:var(--text-dim);margin-bottom:6px}
+    .example-words{display:flex;gap:8px;flex-wrap:wrap}
+    .ex-word{
+      background:var(--surface2);border-radius:8px;
+      padding:5px 10px;text-align:center;
+    }
+    .ex-word .ew-ar{font-family:'Amiri',serif;font-size:16px;direction:rtl;display:block}
+    .ex-word .ew-ko{font-size:9px;color:var(--text-dim);display:block;margin-top:1px}
+
+    /* ── BOTTOM NAV ── */
+    .bottom-nav{
+      margin-top:auto;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:12px 16px 28px;
+      background:var(--surface);
+      border-top:1px solid var(--surface2);
+    }
+    .skip-btn{
+      background:none;border:none;color:var(--text-dim);
+      font-family:'Noto Sans KR',sans-serif;font-size:13px;cursor:pointer;padding:8px;
+    }
+    .nav-btns{display:flex;gap:8px}
+    .prev-btn{
+      width:44px;height:44px;background:var(--surface2);
+      border:none;border-radius:12px;color:var(--text);
+      font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    }
+    .next-btn{
+      background:var(--primary);border:none;border-radius:12px;
+      color:#fff;font-family:'Noto Sans KR',sans-serif;
+      font-size:14px;font-weight:700;padding:0 22px;height:44px;cursor:pointer;
+    }
+
+    /* ══════════════════════════════
+       STEP 2 — HARAKAT SCREEN
+    ══════════════════════════════ */
+    .step2-intro{
+      margin:0 16px 14px;
+      background:linear-gradient(135deg,#7c2a00,#b84400);
+      border-radius:var(--radius);padding:16px;text-align:center;
+    }
+    .step2-intro-title{font-size:18px;font-weight:700;margin-bottom:4px}
+    .step2-intro-ar{font-family:'Amiri',serif;font-size:14px;color:rgba(255,255,255,.7);margin-bottom:6px}
+    .step2-intro-desc{font-size:12px;color:rgba(255,255,255,.8);line-height:1.5}
+    .ba-demo{display:flex;justify-content:center;gap:16px;margin-top:12px}
+    .ba-card{
+      background:rgba(0,0,0,.25);border-radius:10px;padding:8px 14px;text-align:center;
+    }
+    .ba-card .bc-ar{font-family:'Amiri',serif;font-size:28px;direction:rtl;display:block}
+    .ba-card .bc-ko{font-size:11px;color:rgba(255,255,255,.7);display:block;margin-top:2px}
+
+    .section-title2{font-size:13px;font-weight:700;padding:0 16px 8px;color:var(--text-mid)}
+
+    .harakat-detail-card{
+      margin:0 16px 10px;background:var(--surface);border-radius:var(--radius);
+      display:flex;align-items:center;gap:12px;padding:12px 14px;
+      cursor:pointer;border:1px solid transparent;transition:border-color .2s;
+    }
+    .harakat-detail-card:hover{border-color:var(--primary)}
+    .hd-icon{
+      width:44px;height:44px;border-radius:10px;
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Amiri',serif;font-size:22px;flex-shrink:0;
+    }
+    .hd-icon.orange{background:rgba(224,123,42,.2);border:1px solid rgba(224,123,42,.4)}
+    .hd-icon.purple2{background:rgba(124,92,191,.2);border:1px solid rgba(124,92,191,.4)}
+    .hd-body{flex:1}
+    .hd-name{font-size:14px;font-weight:700}
+    .hd-ar{font-family:'Amiri',serif;font-size:11px;color:var(--text-dim);direction:rtl}
+    .hd-desc{font-size:11px;color:var(--text-mid);margin-top:2px;line-height:1.4}
+    .hd-ex{font-family:'Amiri',serif;font-size:13px;direction:rtl;color:var(--primary-light)}
+    .hd-badge{
+      font-size:10px;padding:2px 7px;border-radius:20px;font-weight:700;white-space:nowrap;
+    }
+    .badge-a{background:rgba(224,123,42,.2);color:var(--orange)}
+    .badge-i{background:rgba(42,90,191,.2);color:#6a9aff}
+    .badge-u{background:rgba(124,92,191,.2);color:#b08af5}
+
+    /* ── QUIZ ── */
+    .quiz-section{
+      margin:0 16px 14px;background:var(--surface);
+      border-radius:var(--radius);padding:14px;
+    }
+    .quiz-label{
+      display:flex;align-items:center;gap:6px;
+      font-size:12px;color:#f5c518;font-weight:700;margin-bottom:10px;
+    }
+    .quiz-word{
+      font-family:'Amiri',serif;font-size:40px;
+      text-align:center;direction:rtl;margin-bottom:12px;
+      color:var(--text);display:block;
+    }
+    .quiz-choices{display:flex;gap:8px}
+    .quiz-btn{
+      flex:1;padding:10px;background:var(--surface2);
+      border:2px solid transparent;border-radius:10px;
+      font-family:'Noto Sans KR',sans-serif;font-size:13px;
+      font-weight:500;color:var(--text);cursor:pointer;transition:all .2s;
+    }
+    .quiz-btn:hover{border-color:var(--primary)}
+    .quiz-btn.correct{background:rgba(34,197,94,.15);border-color:#22c55e;color:#22c55e}
+    .quiz-btn.wrong{background:rgba(239,68,68,.12);border-color:#ef4444;color:#ef4444;animation:shake .3s}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════ STEP 1 ══════════════════ -->
+<div id="step1" class="screen active">
+  <div class="guide-header">
+    <button class="back-btn" onclick="goHome()">‹</button>
+    <div class="header-center">
+      <div class="header-title">아랍어 자판 배우기</div>
+      <div class="step-bars">
+        <div class="step-bar active" id="s1-bar1"></div>
+        <div class="step-bar" id="s1-bar2"></div>
+        <div class="step-bar" id="s1-bar3"></div>
+      </div>
+    </div>
+    <div class="step-label">1 / 3</div>
+  </div>
+
+  <div class="info-banner">ⓘ 키를 눌러 발음과 이름을 확인하세요</div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="dot blue"></div>기본 자음</div>
+    <div class="legend-item"><div class="dot orange"></div>모음 기호</div>
+    <div class="legend-item"><div class="dot purple"></div>특수 부호</div>
+    <div class="legend-item"><div class="dot green"></div>장모음</div>
+  </div>
+
+  <div class="keyboard-wrap" id="keyboard"></div>
+
+  <div class="harakat-section">
+    <div class="harakat-label">모음 기호 (하라카트)&nbsp;&nbsp;&nbsp;특수 부호</div>
+    <div class="harakat-row" id="harakat-row"></div>
+  </div>
+
+  <div class="hint-card" id="hint-card">
+    <div class="hint-card-header">
+      <div class="hint-selected-label">선택된 문자</div>
+      <button class="hint-try-btn" onclick="goStep2()">✏ 직접 눌러보기</button>
+    </div>
+    <div class="hint-body">
+      <div class="hint-char" id="hc-char">ا</div>
+      <div class="hint-info">
+        <div class="hint-ko-name" id="hc-ko">알리프 (Alif)</div>
+        <div class="hint-ar-name" id="hc-ar">ألف</div>
+        <div class="hint-pron">👄 <span id="hc-pron">발음: '아' (장모음)</span></div>
+        <div class="hint-cat-badge badge-long" id="hc-badge">장모음 (حروف المد)</div>
+      </div>
+    </div>
+    <div class="hint-examples">
+      <div class="hint-examples-label">예시 단어</div>
+      <div class="example-words" id="hc-examples"></div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="skip-btn" onclick="goHome()">건너뛰기</button>
+    <div class="nav-btns">
+      <button class="prev-btn" disabled style="opacity:.35">‹</button>
+      <button class="next-btn" onclick="goStep2()">다음 단계 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ STEP 2 ══════════════════ -->
+<div id="step2" class="screen">
+  <div class="guide-header">
+    <button class="back-btn" onclick="goStep1()">‹</button>
+    <div class="header-center">
+      <div class="header-title">모음 기호 익히기</div>
+      <div class="step-bars">
+        <div class="step-bar done"></div>
+        <div class="step-bar active"></div>
+        <div class="step-bar"></div>
+      </div>
+    </div>
+    <div class="step-label">2 / 3</div>
+  </div>
+
+  <div class="step2-intro">
+    <div class="step2-intro-title">하라카트 (حَرَكَات)</div>
+    <div class="step2-intro-ar">حَرَكَات</div>
+    <div class="step2-intro-desc">아랍어의 '단모음 기호'예요.<br>이 기호들이 정확한 발음을 알려줘요.</div>
+    <div class="ba-demo">
+      <div class="ba-card"><span class="bc-ar">بَ</span><span class="bc-ko">ba (바)</span></div>
+      <div class="ba-card"><span class="bc-ar">بِ</span><span class="bc-ko">bi (비)</span></div>
+      <div class="ba-card"><span class="bc-ar">بُ</span><span class="bc-ko">bu (부)</span></div>
+    </div>
+  </div>
+
+  <div class="section-title2">기호별 상세 가이드</div>
+
+  <div class="harakat-detail-card">
+    <div class="hd-icon orange">بَ</div>
+    <div class="hd-body">
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="hd-name">파타 (فَتْحَة)</div>
+        <div class="hd-badge badge-a">단모음 A</div>
+      </div>
+      <div class="hd-desc">자음 위에 표시 · '아/에' 발음</div>
+      <div class="hd-desc">예: <span class="hd-ex">كَتَبَ</span> 카타바 (쓰다)</div>
+    </div>
+  </div>
+
+  <div class="harakat-detail-card">
+    <div class="hd-icon orange">بِ</div>
+    <div class="hd-body">
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="hd-name">카스라 (كَسْرَة)</div>
+        <div class="hd-badge badge-i">단모음 I</div>
+      </div>
+      <div class="hd-desc">자음 아래에 표시 · '이' 발음</div>
+      <div class="hd-desc">예: <span class="hd-ex">بِنْت</span> 빈트 (소녀)</div>
+    </div>
+  </div>
+
+  <div class="harakat-detail-card">
+    <div class="hd-icon orange">بُ</div>
+    <div class="hd-body">
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="hd-name">담마 (ضَمَّة)</div>
+        <div class="hd-badge badge-u">단모음 U</div>
+      </div>
+      <div class="hd-desc">자음 위에 와우 모양 · '우' 발음</div>
+      <div class="hd-desc">예: <span class="hd-ex">كُتُب</span> 쿠투브 (책들)</div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-section">
+    <div class="quiz-label">⚡ 빠른 연습 — 어떤 모음 기호인가요?</div>
+    <span class="quiz-word" id="quiz-word">كِتَاب</span>
+    <div class="quiz-choices">
+      <button class="quiz-btn" id="q-fatha" onclick="answerQuiz('fatha')">파타</button>
+      <button class="quiz-btn" id="q-kasra" onclick="answerQuiz('kasra')">카스라 ✓</button>
+      <button class="quiz-btn" id="q-damma" onclick="answerQuiz('damma')">담마</button>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="skip-btn" onclick="goHome()">건너뛰기</button>
+    <div class="nav-btns">
+      <button class="prev-btn" onclick="goStep1()">‹</button>
+      <button class="next-btn" onclick="goHome()">완료 →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 문자 데이터 ──
+const charData = {
+  'ا': { ko:'알리프 (Alif)', ar:'ألف', pron:"발음: '아' (장모음)", cat:'long', catLabel:'장모음 (حروف المد)', examples:[{ar:'كِتَاب',ko:'키타브 / 책'},{ar:'بَاب',ko:'바브 / 문'},{ar:'مَاء',ko:'마아 / 물'}]},
+  'ب': { ko:'바 (Ba)', ar:'بَاء', pron:"발음: 'b'", cat:'basic', catLabel:'기본 자음', examples:[{ar:'بَيْت',ko:'바이트 / 집'},{ar:'بَاب',ko:'바브 / 문'},{ar:'بِنْت',ko:'빈트 / 소녀'}]},
+  'ت': { ko:'타 (Ta)', ar:'تَاء', pron:"발음: 't'", cat:'basic', catLabel:'기본 자음', examples:[{ar:'تَمْر',ko:'타므르 / 대추야자'},{ar:'تُفَّاح',ko:'투파흐 / 사과'}]},
+  'ث': { ko:'싸 (Tha)', ar:'ثَاء', pron:"발음: 'th' (영어 thin)", cat:'basic', catLabel:'기본 자음', examples:[{ar:'ثَلَاثَة',ko:'쌀라싸 / 셋'},{ar:'ثَلْج',ko:'쌀지 / 눈'}]},
+  'ج': { ko:'짐 (Jim)', ar:'جِيم', pron:"발음: 'j'", cat:'basic', catLabel:'기본 자음', examples:[{ar:'جَمَل',ko:'자말 / 낙타'},{ar:'جَمِيل',ko:'자밀 / 아름다운'}]},
+  'ح': { ko:'하 (Ha)', ar:'حَاء', pron:"발음: 'h' (목 깊숙이)", cat:'basic', catLabel:'기본 자음', examples:[{ar:'حَلِيب',ko:'할립 / 우유'},{ar:'حَيَاة',ko:'하야 / 삶'}]},
+  'خ': { ko:'하 (Kha)', ar:'خَاء', pron:"발음: 'kh' (독일 Bach)", cat:'basic', catLabel:'기본 자음', examples:[{ar:'خُبْز',ko:'후브즈 / 빵'},{ar:'خَيْر',ko:'하이르 / 좋음'}]},
+  'د': { ko:'달 (Dal)', ar:'دَال', pron:"발음: 'd'", cat:'basic', catLabel:'기본 자음', examples:[{ar:'دَرْس',ko:'다르스 / 수업'},{ar:'دَاء',ko:'다 / 질병'}]},
+  'ذ': { ko:'달 (Dhal)', ar:'ذَال', pron:"발음: 'dh' (영어 the)", cat:'basic', catLabel:'기본 자음', examples:[{ar:'ذَهَب',ko:'다합 / 금'},{ar:'ذِئْب',ko:'디으브 / 늑대'}]},
+  'ر': { ko:'라 (Ra)', ar:'رَاء', pron:"발음: 'r' (굴리는 r)", cat:'basic', catLabel:'기본 자음', examples:[{ar:'رَجُل',ko:'라줄 / 남자'},{ar:'رَأْس',ko:'라스 / 머리'}]},
+  'ز': { ko:'자이 (Zay)', ar:'زَاي', pron:"발음: 'z'", cat:'basic', catLabel:'기본 자음', examples:[{ar:'زَيْت',ko:'자이트 / 기름'},{ar:'زَهْرَة',ko:'자흐라 / 꽃'}]},
+  'س': { ko:'신 (Sin)', ar:'سِين', pron:"발음: 's'", cat:'basic', catLabel:'기본 자음', examples:[{ar:'سَمَك',ko:'사막 / 물고기'},{ar:'سَمَاء',ko:'사마 / 하늘'}]},
+  'ش': { ko:'쉰 (Shin)', ar:'شِين', pron:"발음: 'sh'", cat:'basic', catLabel:'기본 자음', examples:[{ar:'شَمْس',ko:'샴스 / 태양'},{ar:'شَجَرَة',ko:'샤자라 / 나무'}]},
+  'ص': { ko:'싸드 (Sad)', ar:'صَاد', pron:"발음: 강조 's'", cat:'basic', catLabel:'기본 자음', examples:[{ar:'صَبَاح',ko:'사바흐 / 아침'},{ar:'صَغِير',ko:'사기르 / 작은'}]},
+  'ض': { ko:'다드 (Dad)', ar:'ضَاد', pron:"발음: 강조 'd'", cat:'basic', catLabel:'기본 자음', examples:[{ar:'ضَوء',ko:'다우 / 빛'},{ar:'ضَرَب',ko:'다라바 / 치다'}]},
+  'ط': { ko:'타 (Ta)', ar:'طَاء', pron:"발음: 강조 't'", cat:'basic', catLabel:'기본 자음', examples:[{ar:'طَعَام',ko:'타암 / 음식'},{ar:'طَيِّب',ko:'타입 / 좋은'}]},
+  'ظ': { ko:'자 (Zha)', ar:'ظَاء', pron:"발음: 강조 'dh'", cat:'basic', catLabel:'기본 자음', examples:[{ar:'ظَهْر',ko:'자흐르 / 등/낮'},{ar:'ظَرِيف',ko:'자리프 / 재치있는'}]},
+  'ع': { ko:'아인 (Ayn)', ar:'عَيْن', pron:"발음: 목 조이는 '아'", cat:'basic', catLabel:'기본 자음', examples:[{ar:'عَيْن',ko:'아인 / 눈'},{ar:'عَرَب',ko:'아랍 / 아랍인'}]},
+  'غ': { ko:'가인 (Ghayn)', ar:'غَيْن', pron:"발음: 'gh' (파리지엥 r)", cat:'basic', catLabel:'기본 자음', examples:[{ar:'غُرْفَة',ko:'구르파 / 방'},{ar:'غَنِي',ko:'가니 / 부유한'}]},
+  'ف': { ko:'파 (Fa)', ar:'فَاء', pron:"발음: 'f'", cat:'basic', catLabel:'기본 자음', examples:[{ar:'فُول',ko:'풀 / 콩'},{ar:'فَرَح',ko:'파라흐 / 기쁨'}]},
+  'ق': { ko:'카프 (Qaf)', ar:'قَاف', pron:"발음: 목 깊숙이 'k'", cat:'basic', catLabel:'기본 자음', examples:[{ar:'قَلَم',ko:'칼람 / 펜'},{ar:'قَمَر',ko:'카마르 / 달'}]},
+  'ك': { ko:'카프 (Kaf)', ar:'كَاف', pron:"발음: 'k'", cat:'basic', catLabel:'기본 자음', examples:[{ar:'كِتَاب',ko:'키타브 / 책'},{ar:'كَلْب',ko:'칼브 / 개'}]},
+  'ل': { ko:'람 (Lam)', ar:'لَام', pron:"발음: 'l'", cat:'basic', catLabel:'기본 자음', examples:[{ar:'لَيْل',ko:'라일 / 밤'},{ar:'لَبَن',ko:'라반 / 우유'}]},
+  'م': { ko:'밈 (Mim)', ar:'مِيم', pron:"발음: 'm'", cat:'basic', catLabel:'기본 자음', examples:[{ar:'مَاء',ko:'마아 / 물'},{ar:'مَدْرَسَة',ko:'마드라사 / 학교'}]},
+  'ن': { ko:'눈 (Nun)', ar:'نُون', pron:"발음: 'n'", cat:'basic', catLabel:'기본 자음', examples:[{ar:'نَار',ko:'나르 / 불'},{ar:'نَهْر',ko:'나흐르 / 강'}]},
+  'ه': { ko:'하 (Ha)', ar:'هَاء', pron:"발음: 'h'", cat:'basic', catLabel:'기본 자음', examples:[{ar:'هَوَاء',ko:'하와 / 공기'},{ar:'هِلَال',ko:'힐랄 / 초승달'}]},
+  'و': { ko:'와우 (Waw)', ar:'وَاو', pron:"발음: 'w' 또는 장모음 'uu'", cat:'long', catLabel:'장모음 (حروف المد)', examples:[{ar:'وَلَد',ko:'왈라드 / 소년'},{ar:'وَرْد',ko:'와르드 / 장미'}]},
+  'ي': { ko:'야 (Ya)', ar:'يَاء', pron:"발음: 'y' 또는 장모음 'ii'", cat:'long', catLabel:'장모음 (حروف المد)', examples:[{ar:'يَوْم',ko:'야움 / 날'},{ar:'يَد',ko:'야드 / 손'}]},
+  'ى': { ko:'알리프 막수라', ar:'أَلِف مَقْصُورَة', pron:"발음: '아' (장모음, 단어 끝)", cat:'long', catLabel:'장모음 (حروف المد)', examples:[{ar:'مُوسَى',ko:'무사 / 모세'},{ar:'عِيسَى',ko:'이사 / 예수'}]},
+  'ة': { ko:'타 마르부타', ar:'تَاء مَرْبُوطَة', pron:"발음: 'a' (여성형 어미)", cat:'special', catLabel:'특수 문자', examples:[{ar:'مَدِينَة',ko:'마디나 / 도시'},{ar:'مَدْرَسَة',ko:'마드라사 / 학교'}]},
+  'ء': { ko:'함자', ar:'هَمْزَة', pron:"발음: 성문 파열음 '으'", cat:'special', catLabel:'특수 문자', examples:[{ar:'سَأَل',ko:'사알라 / 질문하다'},{ar:'رَأْس',ko:'라스 / 머리'}]},
+  'ئ': { ko:'야 함자', ar:'يَاء بِهَمْزَة', pron:"발음: 함자 + 'ii'", cat:'special', catLabel:'특수 문자', examples:[{ar:'شَيْئًا',ko:'샤이안 / 무언가'}]},
+  'ؤ': { ko:'와우 함자', ar:'وَاو بِهَمْزَة', pron:"발음: 함자 + 'uu'", cat:'special', catLabel:'특수 문자', examples:[{ar:'مُؤَلِّف',ko:'무알리프 / 저자'}]},
+};
+
+const harakatData = [
+  { char:'بَ', name:'파타', color:'orange' },
+  { char:'بِ', name:'카스라', color:'orange' },
+  { char:'بُ', name:'담마', color:'orange' },
+  { char:'بْ', name:'수쿤', color:'purple' },
+  { char:'بّ', name:'샤다', color:'purple' },
+];
+
+const keyboardLayout = [
+  ['ض','ص','ث','ق','ف','غ','ع','ه','خ','ح','ج','د'],
+  ['ش','س','ي','ب','ل','ا','ت','ن','م','ك','ط'],
+  ['ئ','ء','ؤ','ر','ى','ة','و','ز','ظ'],
+];
+
+const koreanHints = {
+  'ض':'다드','ص':'싸드','ث':'싸','ق':'카프','ف':'파','غ':'가인','ع':'아인','ه':'하',
+  'خ':'하','ح':'하','ج':'짐','د':'달','ش':'쉰','س':'신','ي':'야','ب':'바','ل':'람',
+  'ا':'알리프','ت':'타','ن':'눈','م':'밈','ك':'카프','ط':'타','ئ':'야함자','ء':'함자',
+  'ؤ':'와우함자','ر':'라','ى':'알막수라','ة':'타마르','و':'와우','ز':'자이','ظ':'자',
+};
+
+let selectedKey = 'ا';
+
+function getCat(ch) {
+  if (!charData[ch]) return 'basic';
+  return charData[ch].cat;
+}
+
+function buildKeyboard() {
+  const kb = document.getElementById('keyboard');
+  keyboardLayout.forEach(row => {
+    const rowEl = document.createElement('div');
+    rowEl.className = 'kb-row';
+    row.forEach(ch => {
+      const key = document.createElement('div');
+      const cat = getCat(ch);
+      key.className = `key cat-${cat}${ch === selectedKey ? ' selected' : ''}`;
+      key.innerHTML = `<span class="ka">${ch}</span><span class="kh">${koreanHints[ch]||''}</span>`;
+      key.addEventListener('click', () => selectKey(ch));
+      rowEl.appendChild(key);
+    });
+    kb.appendChild(rowEl);
+  });
+}
+
+function buildHarakat() {
+  const row = document.getElementById('harakat-row');
+  harakatData.forEach(h => {
+    const btn = document.createElement('button');
+    btn.className = `h-key ${h.color}`;
+    btn.innerHTML = `<span class="hk-char">${h.char}</span><span class="hk-name">${h.name}</span>`;
+    row.appendChild(btn);
+  });
+}
+
+function selectKey(ch) {
+  selectedKey = ch;
+  document.querySelectorAll('.key').forEach(k => {
+    const ka = k.querySelector('.ka').textContent;
+    k.classList.toggle('selected', ka === ch);
+  });
+  updateHintCard(ch);
+}
+
+function updateHintCard(ch) {
+  const d = charData[ch];
+  if (!d) return;
+  document.getElementById('hc-char').textContent = ch;
+  document.getElementById('hc-ko').textContent = d.ko;
+  document.getElementById('hc-ar').textContent = d.ar;
+  document.getElementById('hc-pron').textContent = d.pron;
+  const badge = document.getElementById('hc-badge');
+  badge.textContent = d.catLabel;
+  badge.className = 'hint-cat-badge ' + (d.cat === 'long' ? 'badge-long' : d.cat === 'basic' ? 'badge-basic' : 'badge-special');
+  const exEl = document.getElementById('hc-examples');
+  exEl.innerHTML = '';
+  (d.examples || []).forEach(ex => {
+    const div = document.createElement('div');
+    div.className = 'ex-word';
+    div.innerHTML = `<span class="ew-ar">${ex.ar}</span><span class="ew-ko">${ex.ko}</span>`;
+    exEl.appendChild(div);
+  });
+}
+
+function goStep1() {
+  document.getElementById('step2').classList.remove('active');
+  document.getElementById('step1').classList.add('active');
+}
+function goStep2() {
+  document.getElementById('step1').classList.remove('active');
+  document.getElementById('step2').classList.add('active');
+}
+function goHome() {
+  location.href = 'index.html';
+}
+
+// Quiz
+const quizAnswers = { 'q-fatha': false, 'q-kasra': true, 'q-damma': false };
+let quizDone = false;
+function answerQuiz(choice) {
+  if (quizDone) return;
+  quizDone = true;
+  const correct = choice === 'kasra';
+  const ids = ['q-fatha','q-kasra','q-damma'];
+  ids.forEach(id => {
+    const btn = document.getElementById(id);
+    if (id === 'q-kasra') btn.classList.add('correct');
+    else if (id === `q-${choice}` && !correct) btn.classList.add('wrong');
+  });
+  setTimeout(() => {
+    quizDone = false;
+    ids.forEach(id => document.getElementById(id).classList.remove('correct','wrong'));
+  }, 1800);
+}
+
+buildKeyboard();
+buildHarakat();
+updateHintCard('ا');
+</script>
+</body>
+</html>

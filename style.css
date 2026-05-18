@@ -88,6 +88,12 @@ body {
   cursor: pointer;
 }
 .mode-card.locked { opacity: .5; }
+.mode-card.keyboard-mode {
+  background: linear-gradient(135deg, #0f5c4a 0%, #1a8a6a 100%);
+  cursor: pointer;
+}
+.new-badge { background: rgba(255,255,255,.25); }
+.keyboard-start-btn { color: #1a8a6a; }
 .mode-badge {
   display: inline-block;
   background: rgba(255,255,255,.25);
