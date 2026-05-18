@@ -153,6 +153,79 @@ $('btn-next-wrong').addEventListener('click', nextWord);
 $('btn-back-wrong').addEventListener('click', () => show('screen-home'));
 $('btn-home').addEventListener('click', () => show('screen-home'));
 
+// ── TIP SHEET ──
+const tipKeyboard = [
+  [
+    {ar:'ض',ko:'다드',cat:'emph'},{ar:'ص',ko:'싸드',cat:'emph'},{ar:'ث',ko:'싸',cat:'basic'},
+    {ar:'ق',ko:'카프',cat:'basic'},{ar:'ف',ko:'파',cat:'basic'},{ar:'غ',ko:'가인',cat:'basic'},
+    {ar:'ع',ko:'아인',cat:'basic'},{ar:'ه',ko:'하',cat:'basic'},{ar:'خ',ko:'하',cat:'basic'},
+    {ar:'ح',ko:'하',cat:'basic'},{ar:'ج',ko:'짐',cat:'basic'},{ar:'د',ko:'달',cat:'basic'},
+  ],
+  [
+    {ar:'ش',ko:'쉰',cat:'basic'},{ar:'س',ko:'신',cat:'basic'},{ar:'ي',ko:'야',cat:'long'},
+    {ar:'ب',ko:'바',cat:'basic'},{ar:'ل',ko:'람',cat:'basic'},{ar:'ا',ko:'알리프',cat:'long'},
+    {ar:'ت',ko:'타',cat:'basic'},{ar:'ن',ko:'눈',cat:'basic'},{ar:'م',ko:'밈',cat:'basic'},
+    {ar:'ك',ko:'카프',cat:'basic'},{ar:'ط',ko:'타',cat:'emph'},
+  ],
+  [
+    {ar:'ئ',ko:'야함자',cat:'special'},{ar:'ء',ko:'함자',cat:'special'},{ar:'ؤ',ko:'와우함자',cat:'special'},
+    {ar:'ر',ko:'라',cat:'basic'},{ar:'ى',ko:'알막수라',cat:'long'},{ar:'ة',ko:'타마르부타',cat:'special'},
+    {ar:'و',ko:'와우',cat:'long'},{ar:'ز',ko:'자이',cat:'basic'},{ar:'ظ',ko:'자',cat:'emph'},
+  ],
+];
+
+const tipHarakat = [
+  { ar:'بَ', ko:'파타', sub:'단모음 a', color:'orange' },
+  { ar:'بِ', ko:'카스라', sub:'단모음 i', color:'orange' },
+  { ar:'بُ', ko:'담마', sub:'단모음 u', color:'orange' },
+  { ar:'بْ', ko:'수쿤', sub:'받침/묵음', color:'blue', selected:true },
+  { ar:'بّ', ko:'샷다', sub:'겹자음', color:'purple' },
+  { ar:'بً', ko:'탄윈파타', sub:'~an', color:'gray' },
+  { ar:'بٌ', ko:'탄윈담마', sub:'~un', color:'gray' },
+  { ar:'بٍ', ko:'탄윈카스라', sub:'~in', color:'gray' },
+  { ar:'ـ', ko:'타트윌', sub:'늘임표', color:'gray' },
+];
+
+function buildTipSheet() {
+  tipKeyboard.forEach((row, i) => {
+    const el = document.getElementById(`tip-row${i + 1}`);
+    if (!el) return;
+    row.forEach(k => {
+      const div = document.createElement('div');
+      div.className = `tip-key cat-${k.cat}`;
+      div.innerHTML = `<span class="tk-ar">${k.ar}</span><span class="tk-ko">${k.ko}</span>`;
+      el.appendChild(div);
+    });
+    if (i === 2) {
+      const del = document.createElement('div');
+      del.className = 'tip-key-del';
+      del.textContent = '⌫';
+      el.appendChild(del);
+    }
+  });
+
+  const hg = document.getElementById('tip-harakat');
+  if (!hg) return;
+  tipHarakat.forEach(h => {
+    const btn = document.createElement('div');
+    btn.className = `tip-h-key ${h.color}${h.selected ? ' selected' : ''}`;
+    btn.innerHTML = `<span class="thk-ar">${h.ar}</span><span class="thk-ko">${h.ko}</span><span class="thk-sub">${h.sub}</span>`;
+    hg.appendChild(btn);
+  });
+}
+
+function openTip() {
+  document.getElementById('tip-overlay').classList.add('open');
+  document.getElementById('tip-sheet').classList.add('open');
+}
+function closeTip() {
+  document.getElementById('tip-overlay').classList.remove('open');
+  document.getElementById('tip-sheet').classList.remove('open');
+}
+
+$('btn-tip').addEventListener('click', openTip);
+buildTipSheet();
+
 // ── 단어 로드 ──
 fetch('words.json')
   .then(r => r.json())

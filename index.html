@@ -109,7 +109,10 @@
       </div>
     </div>
 
-    <div class="input-label">● 아랍어로 입력하세요 (오른쪽에서 왼쪽)</div>
+    <div class="input-label">
+      <span>● 아랍어로 입력하세요 (오른쪽에서 왼쪽)</span>
+      <button class="tip-btn" id="btn-tip">💡 tip?</button>
+    </div>
     <div class="input-wrap">
       <input
         type="text"
@@ -196,6 +199,58 @@
         <div class="c-stat"><div class="c-val" id="c-rate"></div><div class="c-lbl">정답률</div></div>
       </div>
       <button class="start-btn" id="btn-home">홈으로 돌아가기</button>
+    </div>
+  </div>
+
+  <!-- ===== TIP BOTTOM SHEET ===== -->
+  <div id="tip-overlay" class="tip-overlay" onclick="closeTip()"></div>
+  <div id="tip-sheet" class="tip-sheet">
+    <div class="tip-drag-handle"></div>
+    <div class="tip-header">
+      <div class="tip-header-left">
+        <div class="tip-icon">⌨</div>
+        <div>
+          <div class="tip-title">아랍어 자판 발음 참고표</div>
+          <div class="tip-subtitle">실제 자판 배열 + 하라카트(모음 부호) 포함</div>
+        </div>
+      </div>
+      <button class="tip-close" onclick="closeTip()">✕</button>
+    </div>
+
+    <div class="tip-body">
+      <!-- 키보드 행 -->
+      <div class="tip-row-label">● 1열</div>
+      <div class="tip-kb-row" id="tip-row1"></div>
+      <div class="tip-row-label">● 2열</div>
+      <div class="tip-kb-row" id="tip-row2"></div>
+      <div class="tip-row-label">● 3열</div>
+      <div class="tip-kb-row" id="tip-row3"></div>
+
+      <!-- 하라카트 섹션 -->
+      <div class="tip-section-title">
+        <span class="tip-dot orange"></span>
+        하라카트 — 모음 부호 <span class="tip-section-sub">(수쿤 키 확장)</span>
+      </div>
+      <div class="tip-info-box">
+        ⓘ 단어 안에서 짧은 모음을 표시하는 기호예요<br>
+        예: ـَ(바) · ـِ(비) · ـُ(부) · ـْ(받침) · ـّ(강조)
+      </div>
+      <div class="tip-harakat-grid" id="tip-harakat"></div>
+
+      <!-- 범례 -->
+      <div class="tip-legend">
+        <div class="tl-item"><span class="tl-dot orange"></span>단모음</div>
+        <div class="tl-item"><span class="tl-dot blue"></span>수쿤(받침)</div>
+        <div class="tl-item"><span class="tl-dot purple"></span>길다(겹자음)</div>
+        <div class="tl-item"><span class="tl-dot gray"></span>탄윈(어말)</div>
+        <div class="tl-item"><span class="tl-dot white"></span>일반 자음</div>
+        <div class="tl-item"><span class="tl-dot red"></span>강조 자음</div>
+        <div class="tl-item"><span class="tl-dot green"></span>모음자</div>
+      </div>
+    </div>
+
+    <div class="tip-footer">
+      <button class="tip-confirm-btn" onclick="closeTip()">✓ 확인했어요</button>
     </div>
   </div>
 
