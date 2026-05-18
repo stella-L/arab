@@ -120,6 +120,13 @@ $('arabic-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') checkAnswer();
 });
 
+// 모바일: 가상 키보드 올라올 때 입력창이 가려지지 않도록 스크롤
+$('arabic-input').addEventListener('focus', () => {
+  setTimeout(() => {
+    $('arabic-input').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 350);
+});
+
 $('arabic-input').addEventListener('input', () => {
   if (!answered && $('arabic-input').value.trim()) {
     $('arabic-input').classList.remove('wrong-input');

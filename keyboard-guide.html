@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>아랍어 자판 배우기 — ArabType</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet"/>
@@ -19,14 +19,18 @@
       --radius:16px;--key-radius:8px;
     }
     body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;
-      display:flex;justify-content:center;min-height:100vh}
-    .screen{display:none;flex-direction:column;width:100%;max-width:430px;min-height:100vh}
+      display:flex;justify-content:center;min-height:100vh;min-height:-webkit-fill-available;
+      -webkit-text-size-adjust:100%}
+    .screen{display:none;flex-direction:column;width:100%;max-width:430px;
+      min-height:100vh;min-height:-webkit-fill-available;
+      padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));
+      -webkit-overflow-scrolling:touch;overflow-y:auto}
     .screen.active{display:flex}
 
     /* ── HEADER ── */
     .guide-header{
       display:flex;align-items:center;gap:12px;
-      padding:52px 20px 14px;
+      padding:max(52px, calc(env(safe-area-inset-top,0px) + 12px)) 20px 14px;
     }
     .back-btn{
       background:var(--surface);border:none;color:var(--text);
@@ -168,9 +172,10 @@
     .bottom-nav{
       margin-top:auto;
       display:flex;align-items:center;justify-content:space-between;
-      padding:12px 16px 28px;
+      padding:12px 16px calc(28px + env(safe-area-inset-bottom,0px));
       background:var(--surface);
       border-top:1px solid var(--surface2);
+      position:sticky;bottom:0;
     }
     .skip-btn{
       background:none;border:none;color:var(--text-dim);

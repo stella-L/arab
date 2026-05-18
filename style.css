@@ -1,5 +1,8 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* 모바일 더블탭 줌 방지 */
+button, a, input, [role="button"] { touch-action: manipulation; }
+
 :root {
   --bg: #0f1117;
   --surface: #1a1d27;
@@ -12,15 +15,26 @@
   --text-dim: #8888aa;
   --accent: #f59e0b;
   --radius: 16px;
+  /* 안전 영역 (노치/홈 인디케이터) */
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+}
+
+html {
+  height: 100%;
+  overflow-x: hidden;
 }
 
 body {
   background: var(--bg);
   color: var(--text);
   font-family: 'Noto Sans KR', sans-serif;
+  /* 100vh 버그 수정: -webkit-fill-available 폴백 */
   min-height: 100vh;
+  min-height: -webkit-fill-available;
   display: flex;
   justify-content: center;
+  -webkit-text-size-adjust: 100%; /* 모바일 자동 폰트 크기 조정 방지 */
 }
 
 .screen {
@@ -29,14 +43,18 @@ body {
   width: 100%;
   max-width: 430px;
   min-height: 100vh;
-  padding: 0 0 80px;
+  min-height: -webkit-fill-available;
+  /* 하단: 네비바 높이 + 홈 인디케이터 */
+  padding: 0 0 calc(80px + var(--sab));
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .screen.active { display: flex; }
 
 /* ── HOME ── */
 .home-header {
-  padding: 56px 20px 20px;
+  /* 노치 기기: safe-area-inset-top 적용 */
+  padding: max(56px, calc(var(--sat) + 16px)) 20px 20px;
 }
 .app-logo {
   display: flex;
@@ -122,11 +140,14 @@ body {
 
 .bottom-nav {
   position: fixed;
-  bottom: 0; left: 50%; transform: translateX(-50%);
+  bottom: 0; left: 0; right: 0;
+  margin: 0 auto;
   width: 100%; max-width: 430px;
   background: var(--surface);
   display: flex;
   border-top: 1px solid var(--surface2);
+  /* 홈 인디케이터 위 여백 확보 */
+  padding-bottom: var(--sab);
 }
 .nav-item {
   flex: 1; display: flex; flex-direction: column;
@@ -140,7 +161,7 @@ body {
 /* ── PRACTICE ── */
 .practice-header {
   display: flex; align-items: center; gap: 12px;
-  padding: 52px 20px 12px;
+  padding: max(52px, calc(var(--sat) + 12px)) 20px 12px;
 }
 .back-btn {
   background: var(--surface); border: none;
@@ -199,11 +220,14 @@ body {
 
 .arabic-word {
   font-family: 'Amiri', serif;
-  font-size: 52px; font-weight: 700;
+  /* 작은 화면에서 폰트 넘침 방지 */
+  font-size: clamp(36px, 12vw, 52px);
+  font-weight: 700;
   text-align: center;
   line-height: 1.3;
   margin-bottom: 10px;
   color: var(--text);
+  word-break: break-all;
 }
 .transliteration {
   text-align: center;
@@ -242,10 +266,14 @@ body {
   border-radius: 12px;
   padding: 14px 16px;
   font-family: 'Amiri', serif;
+  /* 16px 미만이면 모바일 Safari가 자동 줌 → 26px 유지 */
   font-size: 26px; color: var(--text);
   text-align: right;
   outline: none;
   transition: border-color .2s;
+  /* iOS 기본 스타일 제거 */
+  -webkit-appearance: none;
+  appearance: none;
 }
 .arabic-input:focus { border-color: var(--primary); }
 .arabic-input.correct { border-color: var(--success); background: rgba(34,197,94,.08); }
